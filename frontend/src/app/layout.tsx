@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Future Self Simulator | AI Life Coach & Habit Forecaster",
   description: "An AI-powered life simulation platform to visualize how your habits, career choices, financial behaviors, and stress levels influence your future over 1, 5, and 10 years.",
+  verification: {
+    google: "0EVLmGdp_eXEsMqt160zziunDmj9JfuNI_gL01umSls",
+  },
 };
 
 export default function RootLayout({
