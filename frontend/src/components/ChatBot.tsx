@@ -31,6 +31,7 @@ const BOT_AVATAR = (
 );
 
 export default function ChatBot() {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -49,6 +50,10 @@ export default function ChatBot() {
   const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -58,6 +63,8 @@ export default function ChatBot() {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  if (!mounted) return null;
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
