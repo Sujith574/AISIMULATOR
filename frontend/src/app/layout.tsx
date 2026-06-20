@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "../components/Navbar";
 import ChatBot from "../components/ChatBot";
+import PWAInstallPrompt from "../components/PWAInstallPrompt";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -55,6 +56,8 @@ export default function RootLayout({
         </footer>
         {/* Floating AI Chat Assistant */}
         <ChatBot />
+        {/* PWA Install Promotion Banner */}
+        <PWAInstallPrompt />
       </body>
     </html>
   );
