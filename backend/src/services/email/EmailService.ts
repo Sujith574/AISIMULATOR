@@ -1,4 +1,5 @@
 import * as nodemailer from "nodemailer";
+import * as dns from "dns";
 
 // =====================================================
 // OTP STORE — In-memory (local mode) with expiration
@@ -69,7 +70,10 @@ class EmailService {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
-    });
+      lookup: (hostname: string, options: any, callback: any) => {
+        dns.lookup(hostname, { ...options, family: 4 }, callback);
+      },
+    } as any);
 
     return this.transporter;
   }
