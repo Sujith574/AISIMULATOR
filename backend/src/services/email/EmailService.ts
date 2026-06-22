@@ -1,6 +1,7 @@
 import * as nodemailer from "nodemailer";
 import * as dns from "dns";
 import { Resend } from "resend";
+import * as sgMail from "@sendgrid/mail";
 
 // =====================================================
 // OTP STORE — In-memory (local mode) with expiration
@@ -247,7 +248,26 @@ class EmailService {
 </body>
 </html>`;
 
-    // 1. Check if Resend API is configured (highly recommended for Render/production environments)
+    // 1. Check if SendGrid API is configured
+    if (process.env.SENDGRID_API_KEY) {
+      console.log(`[EmailService] SENDGRID_API_KEY found. Sending OTP email via SendGrid HTTP API...`);
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      
+      const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER || "sakkurisnigdha@gmail.com";
+      
+      await sgMail.send({
+        to: toEmail,
+        from: `"${fromName}" <${fromAddress}>`,
+        subject: `${otp} — Your Future Self Simulator Sign-In Code`,
+        html: htmlTemplate,
+        text: `Your Future Self Simulator OTP is: ${otp}\n\nThis code expires in 10 minutes.\n\nDo not share this code with anyone.`,
+      });
+
+      console.log(`[EmailService] OTP sent successfully to ${toEmail} via SendGrid`);
+      return;
+    }
+
+    // 2. Check if Resend API is configured
     if (process.env.RESEND_API_KEY) {
       console.log(`[EmailService] RESEND_API_KEY found. Sending OTP email via Resend HTTP API...`);
       const resendClient = new Resend(process.env.RESEND_API_KEY);
@@ -271,8 +291,8 @@ class EmailService {
       return;
     }
 
-    // 2. Fallback to Gmail SMTP via Nodemailer (works locally)
-    console.log(`[EmailService] RESEND_API_KEY not found. Falling back to Nodemailer SMTP...`);
+    // 3. Fallback to Gmail SMTP via Nodemailer (works locally)
+    console.log(`[EmailService] SMTP fallback. Sending via Nodemailer SMTP...`);
     const mailOptions: nodemailer.SendMailOptions = {
       from: `"${fromName}" <${fromUser}>`,
       to: toEmail,
