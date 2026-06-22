@@ -1,5 +1,6 @@
 import * as nodemailer from "nodemailer";
 import * as dns from "dns";
+import { Resend } from "resend";
 
 // =====================================================
 // OTP STORE — In-memory (local mode) with expiration
@@ -142,61 +143,68 @@ class EmailService {
     .subtitle {
       color: #94a3b8;
       font-size: 14px;
-      margin: 0 0 32px;
       line-height: 1.6;
-    }
-    .otp-box {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(99, 102, 241, 0.08));
-      border: 1.5px solid rgba(139, 92, 246, 0.3);
-      border-radius: 16px;
-      padding: 28px 20px;
       margin: 0 0 28px;
     }
+    .otp-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
     .otp-label {
-      color: #94a3b8;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .otp-code {
-      color: #c4b5fd;
-      font-size: 44px;
+      color: #c084fc;
+      font-size: 36px;
       font-weight: 800;
-      letter-spacing: 0.2em;
-      font-variant-numeric: tabular-nums;
+      letter-spacing: 6px;
+      margin-bottom: 4px;
     }
     .otp-expiry {
       color: #64748b;
-      font-size: 12px;
-      margin-top: 10px;
-    }
-    .divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      margin: 28px 0;
+      font-size: 11px;
     }
     .warning-box {
-      background: rgba(245, 158, 11, 0.05);
-      border: 1px solid rgba(245, 158, 11, 0.15);
-      border-radius: 10px;
-      padding: 14px 18px;
-      text-align: left;
+      background: rgba(239, 68, 68, 0.02);
+      border: 1px solid rgba(239, 68, 68, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 28px;
     }
     .warning-text {
-      color: #fbbf24;
+      color: #ef4444;
       font-size: 11px;
-      line-height: 1.7;
+      line-height: 1.5;
       margin: 0;
+      opacity: 0.85;
+    }
+    .divider {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin: 0 0 24px;
     }
     .footer {
       color: #475569;
       font-size: 11px;
-      margin-top: 28px;
       line-height: 1.6;
+      margin: 0;
     }
-    .footer a { color: #8b5cf6; text-decoration: none; }
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+      margin: 0 4px;
+    }
+    .footer a:hover {
+      color: #94a3b8;
+    }
   </style>
 </head>
 <body>
@@ -239,6 +247,32 @@ class EmailService {
 </body>
 </html>`;
 
+    // 1. Check if Resend API is configured (highly recommended for Render/production environments)
+    if (process.env.RESEND_API_KEY) {
+      console.log(`[EmailService] RESEND_API_KEY found. Sending OTP email via Resend HTTP API...`);
+      const resendClient = new Resend(process.env.RESEND_API_KEY);
+      
+      // Resend sandbox restricts fromAddress to onboarding@resend.dev for unverified domains
+      const fromAddress = process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev";
+      
+      const { data, error } = await resendClient.emails.send({
+        from: `${fromName} <${fromAddress}>`,
+        to: [toEmail],
+        subject: `${otp} — Your Future Self Simulator Sign-In Code`,
+        html: htmlTemplate,
+        text: `Your Future Self Simulator OTP is: ${otp}\n\nThis code expires in 10 minutes.\n\nDo not share this code with anyone.`,
+      });
+
+      if (error) {
+        throw new Error(`Resend email send failed: ${error.message}`);
+      }
+
+      console.log(`[EmailService] OTP sent successfully to ${toEmail} via Resend. ID: ${data?.id}`);
+      return;
+    }
+
+    // 2. Fallback to Gmail SMTP via Nodemailer (works locally)
+    console.log(`[EmailService] RESEND_API_KEY not found. Falling back to Nodemailer SMTP...`);
     const mailOptions: nodemailer.SendMailOptions = {
       from: `"${fromName}" <${fromUser}>`,
       to: toEmail,
@@ -248,7 +282,7 @@ class EmailService {
     };
 
     await this.getTransporter().sendMail(mailOptions);
-    console.log(`[EmailService] OTP sent to ${toEmail}`);
+    console.log(`[EmailService] OTP sent successfully to ${toEmail} via Nodemailer SMTP`);
   }
 }
 
