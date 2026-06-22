@@ -77,8 +77,8 @@ class EmailService {
 
     this.transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // STARTTLS
+      port: 465,
+      secure: true, // SSL
       auth: { user, pass },
       connectionTimeout: 10000, // 10 seconds connection timeout
       greetingTimeout: 10000,
