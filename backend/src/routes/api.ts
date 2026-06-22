@@ -95,6 +95,7 @@ router.post("/auth/send-otp", async (req: Request, res: Response) => {
         ? `OTP generated for ${email}. If you don't receive the email, check the backend service logs for the code.`
         : `[DEV MODE] SMTP failed. OTP: ${otp}`,
       email,
+      smtpError: err.message, // Return the error message to help user debug SMTP credentials
       ...(isProduction ? {} : { mockOtp: otp }),
     });
   }
