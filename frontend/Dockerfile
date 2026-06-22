@@ -8,8 +8,15 @@ RUN npm install
 
 COPY . .
 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", ".next/standalone/server.js"]

@@ -61,7 +61,9 @@ class EmailService {
     if (this.transporter) return this.transporter;
 
     const user = process.env.EMAIL_USER;
-    const pass = process.env.EMAIL_APP_PASSWORD;
+    // Gmail App Passwords are given with spaces (e.g. "xxxx xxxx xxxx xxxx").
+    // Strip all spaces so nodemailer can authenticate correctly.
+    const pass = (process.env.EMAIL_APP_PASSWORD || "").replace(/\s+/g, "");
 
     if (!user || !pass) {
       throw new Error("EMAIL_USER and EMAIL_APP_PASSWORD must be set in .env");

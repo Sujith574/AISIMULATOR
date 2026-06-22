@@ -1,0 +1,46 @@
+services:
+  # ─────────────────────────────────────────────
+  # BACKEND: Express + TypeScript API
+  # ─────────────────────────────────────────────
+  - type: web
+    name: aisimulator-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PROVIDER_MODE
+        value: local
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true         # Render auto-generates a secure random value
+      - key: GROQ_API_KEY
+        sync: false                 # Set manually in Render dashboard
+      - key: EMAIL_USER
+        sync: false                 # Set manually in Render dashboard
+      - key: EMAIL_APP_PASSWORD
+        sync: false                 # Set manually in Render dashboard
+      - key: EMAIL_FROM_NAME
+        value: Future Self Simulator
+
+  # ─────────────────────────────────────────────
+  # FRONTEND: Next.js
+  # ─────────────────────────────────────────────
+  - type: web
+    name: aisimulator-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: node .next/standalone/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        # IMPORTANT: Replace with your actual backend Render URL after first deploy
+        value: https://aisimulator-backend.onrender.com/api
