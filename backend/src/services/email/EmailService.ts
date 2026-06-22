@@ -78,6 +78,9 @@ class EmailService {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
+      connectionTimeout: 5000, // 5 seconds connection timeout
+      greetingTimeout: 5000,   // 5 seconds greeting timeout
+      socketTimeout: 5000,     // 5 seconds socket timeout
       lookup: (hostname: string, options: any, callback: any) => {
         dns.lookup(hostname, { ...options, family: 4 }, callback);
       },
