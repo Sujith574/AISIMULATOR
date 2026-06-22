@@ -1,6 +1,8 @@
 services:
   # ─────────────────────────────────────────────
   # BACKEND: Express + TypeScript API
+  # Render auto-sets PORT env var (usually 10000).
+  # The backend reads process.env.PORT — DO NOT override PORT here.
   # ─────────────────────────────────────────────
   - type: web
     name: aisimulator-backend
@@ -14,8 +16,6 @@ services:
         value: production
       - key: PROVIDER_MODE
         value: local
-      - key: PORT
-        value: 5000
       - key: JWT_SECRET
         generateValue: true         # Render auto-generates a secure random value
       - key: GROQ_API_KEY
@@ -28,7 +28,10 @@ services:
         value: Future Self Simulator
 
   # ─────────────────────────────────────────────
-  # FRONTEND: Next.js
+  # FRONTEND: Next.js (standalone output)
+  # Render auto-sets PORT. HOSTNAME=0.0.0.0 ensures
+  # the server binds to all interfaces (not just localhost).
+  # NEXT_PUBLIC_API_URL is baked in at BUILD TIME — must be set here.
   # ─────────────────────────────────────────────
   - type: web
     name: aisimulator-frontend
@@ -39,8 +42,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
+      - key: HOSTNAME
+        value: "0.0.0.0"
       - key: NEXT_PUBLIC_API_URL
-        # IMPORTANT: Replace with your actual backend Render URL after first deploy
+        # This URL is embedded into the JS bundle at build time.
+        # It MUST match your deployed backend Render URL exactly.
         value: https://aisimulator-backend.onrender.com/api
