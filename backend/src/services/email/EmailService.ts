@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import * as dns from "dns";
 import { Resend } from "resend";
-import * as sgMail from "@sendgrid/mail";
+import sgMail from "@sendgrid/mail";
 
 // =====================================================
 // OTP STORE — In-memory (local mode) with expiration
