@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 'standalone' output is recommended for self-hosted deployments (Render, Docker).
-  // It bundles only the necessary files for production.
-  output: "standalone",
+  // Note: Do NOT use output:'standalone' on Render native Node runner —
+  // it breaks static asset serving (.next/static not copied automatically).
+  // Use regular `next start` instead.
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
   },

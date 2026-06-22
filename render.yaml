@@ -17,34 +17,31 @@ services:
       - key: PROVIDER_MODE
         value: local
       - key: JWT_SECRET
-        generateValue: true         # Render auto-generates a secure random value
+        generateValue: true
       - key: GROQ_API_KEY
-        sync: false                 # Set manually in Render dashboard
+        sync: false
       - key: EMAIL_USER
-        sync: false                 # Set manually in Render dashboard
+        sync: false
       - key: EMAIL_APP_PASSWORD
-        sync: false                 # Set manually in Render dashboard
+        sync: false
       - key: EMAIL_FROM_NAME
         value: Future Self Simulator
 
   # ─────────────────────────────────────────────
-  # FRONTEND: Next.js (standalone output)
-  # Render auto-sets PORT. HOSTNAME=0.0.0.0 ensures
-  # the server binds to all interfaces (not just localhost).
-  # NEXT_PUBLIC_API_URL is baked in at BUILD TIME — must be set here.
+  # FRONTEND: Next.js
+  # Uses regular `next start` (NOT standalone) so that
+  # .next/static/ assets (CSS, JS) are served correctly.
+  # NEXT_PUBLIC_API_URL is baked in at BUILD TIME.
   # ─────────────────────────────────────────────
   - type: web
     name: aisimulator-frontend
     runtime: node
     rootDir: frontend
     buildCommand: npm install && npm run build
-    startCommand: node .next/standalone/server.js
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: HOSTNAME
-        value: "0.0.0.0"
       - key: NEXT_PUBLIC_API_URL
-        # This URL is embedded into the JS bundle at build time.
-        # It MUST match your deployed backend Render URL exactly.
+        # Baked into JS bundle at build time — must match backend Render URL.
         value: https://aisimulator-backend.onrender.com/api

@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . .
 
+# NEXT_PUBLIC_API_URL must be passed at build time so Next.js embeds it.
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
@@ -16,7 +17,5 @@ RUN npm run build
 EXPOSE 3000
 
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", ".next/standalone/server.js"]
+CMD ["npm", "run", "start"]
