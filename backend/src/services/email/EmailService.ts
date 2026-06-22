@@ -76,14 +76,13 @@ class EmailService {
     }
 
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // STARTTLS
       auth: { user, pass },
-      connectionTimeout: 5000, // 5 seconds connection timeout
-      greetingTimeout: 5000,   // 5 seconds greeting timeout
-      socketTimeout: 5000,     // 5 seconds socket timeout
-      lookup: (hostname: string, options: any, callback: any) => {
-        dns.lookup(hostname, { ...options, family: 4 }, callback);
-      },
+      connectionTimeout: 10000, // 10 seconds connection timeout
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     } as any);
 
     return this.transporter;
