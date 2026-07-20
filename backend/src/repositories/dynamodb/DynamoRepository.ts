@@ -25,6 +25,8 @@ export class DynamoRepository implements IRepository {
       TableName: this.tableName,
       Item: item
     }));
+    // Save email -> user mapping for fast lookup by email
+    await this.saveUserEmailMapping(user.email, user);
     return user;
   }
 

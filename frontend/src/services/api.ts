@@ -39,18 +39,11 @@ class ApiClient {
     return text ? (JSON.parse(text) as T) : ({} as T);
   }
 
-  // OTP Auth APIs
-  async sendOtp(email: string): Promise<{ message: string; email: string }> {
-    return this.request<{ message: string; email: string }>("/auth/send-otp", {
+  // Email + Password Auth APIs
+  async signIn(email: string, password: string): Promise<{ token: string; email: string; userId: string }> {
+    const res = await this.request<{ token: string; email: string; userId: string }>("/auth/signin", {
       method: "POST",
-      body: JSON.stringify({ email }),
-    });
-  }
-
-  async verifyOtp(email: string, otp: string): Promise<{ token: string; email: string; userId: string; isNew?: boolean }> {
-    const res = await this.request<{ token: string; email: string; userId: string; isNew?: boolean }>("/auth/verify-otp", {
-      method: "POST",
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ email, password }),
     });
     if (res.token) {
       localStorage.setItem("authToken", res.token);
@@ -59,13 +52,16 @@ class ApiClient {
     return res;
   }
 
-  // Legacy stubs (no-op, UI no longer calls these)
-  async signIn(_email: string, _password: string): Promise<never> {
-    throw new Error("Password auth disabled. Use OTP login.");
-  }
-
-  async signUp(_email: string, _password: string): Promise<never> {
-    throw new Error("Password auth disabled. Use OTP login.");
+  async signUp(email: string, password: string): Promise<{ token: string; email: string; userId: string }> {
+    const res = await this.request<{ token: string; email: string; userId: string }>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    if (res.token) {
+      localStorage.setItem("authToken", res.token);
+      localStorage.setItem("authEmail", res.email);
+    }
+    return res;
   }
 
 
