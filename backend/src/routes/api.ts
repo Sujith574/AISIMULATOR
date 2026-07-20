@@ -326,7 +326,7 @@ About Future Self Simulator:
 - All projections are possible future scenarios based on inputs, patterns, and behavioral trends — NOT certain predictions
 
 Key Features you help users with:
-1. OTP Login: Users sign in via email using a one-time password (no passwords needed)
+1. Account Login: Users sign in or create an account with their email and password (secure, no OTP needed)
 2. Life Assessment: A multi-step wizard where users input health, career, finance, relationships, and personal growth data
 3. Habit Tracker: Users log positive and negative habits with frequency and consistency scores
 4. AI Simulation Dashboard: After completing assessment + habits, users run the AI simulation to get:
@@ -339,7 +339,7 @@ Key Features you help users with:
 
 How to use the platform step-by-step:
 1. Go to the homepage and click 'Start Your Journey'
-2. Enter your email → receive OTP code → verify it
+2. Go to the homepage, enter your email and password to sign in (or create a new account)
 3. Complete your profile (name, age, occupation, etc.)
 4. Fill in the Life Assessment wizard (5 sections)
 5. Add your habits in the Habit Tracker
