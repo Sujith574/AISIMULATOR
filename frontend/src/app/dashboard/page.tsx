@@ -51,15 +51,25 @@ export default function DashboardPage() {
 
       // If no report found or forcing simulation
       if (!data) {
-        // Test if assessment exists first
+        // Test if profile and assessment exist first
         try {
+          await api.getProfile();
           await api.getAssessment();
-          // Assessment exists, trigger simulation run
-          data = await api.runSimulation();
         } catch {
-          // No assessment found, redirect to assessment wizard
+          // No profile/assessment found, redirect to assessment wizard
           router.push("/assessment");
           return;
+        }
+        // Both exist, trigger simulation run
+        try {
+          data = await api.runSimulation();
+        } catch (simErr: any) {
+          // If simulation fails due to missing data, redirect to assessment
+          if (simErr.message?.includes("required") || simErr.message?.includes("not found")) {
+            router.push("/assessment");
+            return;
+          }
+          throw simErr;
         }
       }
 
